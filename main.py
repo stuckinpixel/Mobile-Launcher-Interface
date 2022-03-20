@@ -9,6 +9,16 @@ fps=64
 ft=pygame.time.Clock()
 pygame.display.set_caption("Mobile Launcher Design")
 
+APP_ICON_SIZE = 50
+APP_GRID_CONTAINER_PERCENTAGE_FOR_APP = 0.75
+DRAWER_HEIGHT = 100
+grid_height = HEIGHT-DRAWER_HEIGHT
+each_app_container_size = APP_ICON_SIZE/APP_GRID_CONTAINER_PERCENTAGE_FOR_APP
+ROWS = int(grid_height/each_app_container_size)
+COLS = int(WIDTH/each_app_container_size)
+
+
+
 
 class Wallpaper:
     def __init__(self, image=None, name=""):
@@ -33,9 +43,49 @@ class Wallpapers:
     def get_image(self):
         return self.images[self.cursor].image
 
+class Icon:
+    def __init__(self, name):
+        self.image = None
+        self.name = name
+        self.size = (APP_ICON_SIZE, APP_ICON_SIZE)
+    def set_image(self, path_file_name):
+        img = pygame.image.load(path_file_name)
+        img = pygame.transform.scale(img, self.size)
+        self.image = img
 
 
 class App:
+    def __init__(self, app_name):
+        self.app = app_name
+        self.icon = Icon(app_name)
+
+class Drawer:
+    def __init__(self):
+        self.apps_count = 5
+        self.apps = []
+        self.height = DRAWER_HEIGHT
+        self.add_initial_apps()
+    def add_initial_apps(self):
+        self.apps = []
+        for _ in range(self.apps_count):
+            new_app = App("")
+            self.apps.append(new_app)
+
+class HomeScreenGridApps:
+    def __init__(self):
+        self.matrix = [[]]
+        self.initialize_matrix()
+    def initialize_matrix(self):
+        self.matrix = [ [None for __ in range(COLS)] for _ in range(ROWS) ]
+        print (self.matrix)
+
+class HomeScreen:
+    def __init__(self):
+        self.drawer = Drawer()
+        self.grid = HomeScreenGridApps()
+
+
+class Phone:
     def __init__(self, surface):
         self.surface = surface
         self.play = True
@@ -50,6 +100,7 @@ class App:
         self.drag_counts = 0
         self.drag_positions = []
         self.initialize()
+        self.home_screen = HomeScreen()
     def initialize(self):
         self.wallpapers = Wallpapers()
     def get_drag_direction(self, drag_positions):
@@ -120,8 +171,8 @@ class App:
 
 
 if  __name__ == "__main__":
-    app = App(surface)
-    app.run()
+    phone = Phone(surface)
+    phone.run()
 
 
 
